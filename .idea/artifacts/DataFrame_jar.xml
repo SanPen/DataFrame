@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DataFrame:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DataFrame_jar</output-path>
+    <root id="archive" name="DataFrame.jar">
+      <element id="module-output" name="DataFrame" />
+    </root>
+  </artifact>
+</component>

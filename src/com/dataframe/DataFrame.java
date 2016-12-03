@@ -1,7 +1,7 @@
 package com.dataframe;
 
 import javax.swing.table.AbstractTableModel;
-
+import java.math.*;
 
 public class DataFrame extends AbstractTableModel {
 
@@ -49,6 +49,20 @@ public class DataFrame extends AbstractTableModel {
     }
 
 
+    /**
+     * Normalized cardinal sine function
+     * @param x
+     * @return
+     */
+    private double sinc(double x){
+        return Math.sin(Math.PI * x) / (Math.PI * x);
+    }
+
+    /**
+     * Resample of the data in the dataframe
+     * As seen at:
+     * http://dsp.stackexchange.com/questions/8488/what-is-an-algorithm-to-re-sample-from-a-variable-rate-to-a-fixed-rate
+     */
     public void Resample() {
 
     }
@@ -96,6 +110,36 @@ public class DataFrame extends AbstractTableModel {
         int rr = 0;
         int cc;
         for (int row : r) {
+            cc = 0;
+            for (int col : c) {
+                data[rr][cc] = this.data.values[row][col];
+                idx[rr] = this.index.values[row];
+                hdr[cc] = this.header.values[col];
+                cc++;
+            }
+            rr++;
+        }
+
+        return new DataFrame(data, hdr, idx);
+    }
+
+    /**
+     * Return a subset of the DataFrame composed by the specified columns
+     * @param columns
+     * @return
+     */
+    public DataFrame getSubset(String[] columns) {
+
+        // get the indices matching the columns
+        int[] c = this.header.getIndices(columns);
+
+        Object[][] data = new Object[this.data.rows][c.length];
+        Object[] idx = new Object[this.data.rows];
+        String[] hdr = new String[c.length];
+
+        int rr = 0;
+        int cc;
+        for (int row=0; row<this.data.rows; row++) {
             cc = 0;
             for (int col : c) {
                 data[rr][cc] = this.data.values[row][col];

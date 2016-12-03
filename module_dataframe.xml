@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_dataframe" default="compile.module.dataframe">
+  <dirname property="module.dataframe.basedir" file="${ant.file.module_dataframe}"/>
+  
+  <property name="module.jdk.home.dataframe" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dataframe" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dataframe" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dataframe" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="dataframe.output.dir" value="${module.dataframe.basedir}/out/production/DataFrame"/>
+  <property name="dataframe.testoutput.dir" value="${module.dataframe.basedir}/out/test/DataFrame"/>
+  
+  <path id="dataframe.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dataframe.module.production.classpath">
+    <path refid="${module.jdk.classpath.dataframe}"/>
+  </path>
+  
+  <path id="dataframe.runtime.production.module.classpath">
+    <pathelement location="${dataframe.output.dir}"/>
+  </path>
+  
+  <path id="dataframe.module.classpath">
+    <path refid="${module.jdk.classpath.dataframe}"/>
+    <pathelement location="${dataframe.output.dir}"/>
+  </path>
+  
+  <path id="dataframe.runtime.module.classpath">
+    <pathelement location="${dataframe.testoutput.dir}"/>
+    <pathelement location="${dataframe.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dataframe">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dataframe">
+    <patternset refid="excluded.from.module.dataframe"/>
+  </patternset>
+  
+  <path id="dataframe.module.sourcepath">
+    <dirset dir="${module.dataframe.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dataframe" depends="compile.module.dataframe.production,compile.module.dataframe.tests" description="Compile module DataFrame"/>
+  
+  <target name="compile.module.dataframe.production" depends="register.custom.compilers" description="Compile module DataFrame; production classes">
+    <mkdir dir="${dataframe.output.dir}"/>
+    <javac2 destdir="${dataframe.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dataframe}/javac">
+      <compilerarg line="${compiler.args.dataframe}"/>
+      <bootclasspath refid="dataframe.module.bootclasspath"/>
+      <classpath refid="dataframe.module.production.classpath"/>
+      <src refid="dataframe.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dataframe"/>
+    </javac2>
+    
+    <copy todir="${dataframe.output.dir}">
+      <fileset dir="${module.dataframe.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dataframe.tests" depends="register.custom.compilers,compile.module.dataframe.production" description="compile module DataFrame; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dataframe" description="cleanup module">
+    <delete dir="${dataframe.output.dir}"/>
+    <delete dir="${dataframe.testoutput.dir}"/>
+  </target>
+</project>

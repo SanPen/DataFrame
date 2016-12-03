@@ -2,6 +2,7 @@ package com.dataframe;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
 
 /**
  * Created by santi on 3/12/16.
@@ -51,6 +52,17 @@ public class Index {
         for(int i=0; i<val.length ;i++)
             indices[i] = value_position.get(val[i]);
         return indices;
+    }
+
+
+    public Double[] convert_to_seconds(){
+        Double[] s = new Double[values.length];
+        Date d ;
+        for (int i=0; i<values.length; i++) {
+            d = (Date) values[i];
+            s[i] = (double)d.getTime() / 1000; //unix time in milliseconds
+        }
+        return s;
     }
 
 }

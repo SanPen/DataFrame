@@ -1,7 +1,9 @@
 package com.dataframe;
 
 import javax.swing.table.AbstractTableModel;
-import java.math.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Date;
 
 public class DataFrame extends AbstractTableModel {
 
@@ -51,10 +53,11 @@ public class DataFrame extends AbstractTableModel {
 
     /**
      * Normalized cardinal sine function
+     *
      * @param x
      * @return
      */
-    private double sinc(double x){
+    private double sinc(double x) {
         return Math.sin(Math.PI * x) / (Math.PI * x);
     }
 
@@ -63,8 +66,50 @@ public class DataFrame extends AbstractTableModel {
      * As seen at:
      * http://dsp.stackexchange.com/questions/8488/what-is-an-algorithm-to-re-sample-from-a-variable-rate-to-a-fixed-rate
      */
-    public void Resample() {
+    public void Resample(double value, String units) {
 
+        /*
+        def sinc_resample(self, xnew):
+            m,n = (len(self.x), len(xnew))
+            T = 1./n
+            A = np.zeros((m,n))
+
+            for i in range(0,m):
+                A[i,:] = np.sinc((self.x[i] - xnew)/T)
+
+            return Signal(xnew, npl.lstsq(A,self.y)[0])
+        * */
+
+        // dictionary with number of seconds per sampling unit
+        Map<String, Double> units_dict = new HashMap<>();
+        units_dict.put("week", 7.0*24*60*60*60);
+        units_dict.put("day", 1.0*24*60*60*60);
+        units_dict.put("hour", 1.0*60*60);
+        units_dict.put("minute", 60.0);
+        units_dict.put("second", 1.0);
+
+        int m = index.values.length;
+        Double[] xnow = index.convert_to_seconds();  // get the index times in seconds to be able to resample
+
+        // compute the new times array
+        Double span = units_dict.get(units) * value;  // get the selected time interval to resample
+        int n = (int)Math.floor((xnow[m-1] - xnow[0]) / span); //number of intervals
+        Double[] xnew = new Double[n]; // new array of times
+        Date[] new_dates = new Date[n];
+        xnew[0] = Math.floor(xnow[0] / span) * span;
+        for (int j = 1; j < n; j++) {
+            xnew[j] = xnew[j - 1] + span;
+            new_dates[j] = new Date((long)(xnew[j]*1000));
+        }
+        // create the coefficients matrix A
+        double T = 1.0 / n;  // period
+        Double[][] A = new Double[m][n];
+
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                A[i][j] = sinc((xnow[i] - xnew[j]) / T);
+
+        Double[] ynew = new Double[n];
     }
 
     /**
@@ -125,6 +170,7 @@ public class DataFrame extends AbstractTableModel {
 
     /**
      * Return a subset of the DataFrame composed by the specified columns
+     *
      * @param columns
      * @return
      */
@@ -139,7 +185,7 @@ public class DataFrame extends AbstractTableModel {
 
         int rr = 0;
         int cc;
-        for (int row=0; row<this.data.rows; row++) {
+        for (int row = 0; row < this.data.rows; row++) {
             cc = 0;
             for (int col : c) {
                 data[rr][cc] = this.data.values[row][col];
@@ -159,24 +205,24 @@ public class DataFrame extends AbstractTableModel {
     }
 
     public int getRowCount() {
-        return data.rows-1;
+        return data.rows - 1;
     }
 
     public Object getValueAt(int row, int col) {
         if (col == 0)
             return index.values[row];
         else
-            return data.values[row][col-1];
+            return data.values[row][col - 1];
     }
 
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex){
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == 0)
             index.values[rowIndex] = aValue;
         else
-            data.values[rowIndex][columnIndex-1] = aValue;
+            data.values[rowIndex][columnIndex - 1] = aValue;
     }
 
-    public boolean isCellEditable(int rowIndex, int columnIndex){
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
         return true;
     }
 

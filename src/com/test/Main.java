@@ -17,6 +17,8 @@ public class Main {
         DataFrame data_frame = new CSV("Data.csv", ";").read();
         gui.setModel(data_frame);
 
+        data_frame.Resample(15,"minute");
+
         System.out.println(data_frame.data.sum(0));
     }
 }

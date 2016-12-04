@@ -58,10 +58,10 @@ public class CSV {
         }
 
         if (index_column ==-1) {
-            data = new Object[file.rows][file.columns];
+            data = new Object[file.columns][file.rows];
             hdr = new String[file.columns];
         }else{
-            data = new Object[file.rows][file.columns-1];
+            data = new Object[file.columns-1][file.rows];
             hdr = new String[file.columns-1];
             col_offset = 1;
         }
@@ -79,7 +79,7 @@ public class CSV {
                     } else {
 
                         if (col != index_column) {
-                            data[row-row_offset][col-col_offset] = file.content.get(row)[col];
+                            data[col-col_offset][row-row_offset] = file.content.get(row)[col];
                         }else{
                             idx[row-row_offset] = file.content.get(row)[col];
                         }

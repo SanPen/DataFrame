@@ -17,9 +17,9 @@ public class Data {
 
         this.values = data;
 
-        rows = data.length;
-        if (rows > 0)
-            columns = data[0].length;
+        columns = data.length;
+        if (columns > 0)
+            rows = data[0].length;
 
         convert_data_types();
     }
@@ -35,16 +35,16 @@ public class Data {
             for (int row = 0; row < rows; row++) {
 //                convert(values[row][col]);
 
-                if (values[row][col] != null) {
+                if (values[col][row] != null) {
                     try {
-                        s = (String) values[row][col];
+                        s = (String) values[col][row];
                         s = s.replace(",", ".");
-                        values[row][col] = Double.parseDouble(s);
+                        values[col][row] = Double.parseDouble(s);
                     } catch (NumberFormatException e) {
                         e.printStackTrace(); //prints error
                     }
                 }else{
-                    values[row][col]=0.0;
+                    values[col][row]=0.0;
                 }
             }
         }
@@ -77,18 +77,18 @@ public class Data {
             for (int col = 0; col < columns; col++)
                 for (int row = 0; row < rows; row++) {
                     if (s[col] == null)
-                        s[col] = (Double) values[row][col];
+                        s[col] = (Double) values[col][row];
                     else
-                        s[col] += (Double) values[row][col];
+                        s[col] += (Double) values[col][row];
                 }
         } else {
             s = new Double[rows];
             for (int row = 0; row < rows; row++)
                 for (int col = 0; col < columns; col++) {
                     if (s[row] == null)
-                        s[row] = (Double) values[row][col];
+                        s[row] = (Double) values[col][row];
                     else
-                        s[row] += (Double) values[row][col];
+                        s[row] += (Double) values[col][row];
                 }
         }
         return s;
@@ -102,7 +102,7 @@ public class Data {
         double s = 0;
         for (int col = 0; col < columns; col++)
             for (int row = 0; row < rows; row++)
-                s += (Double) values[row][col];
+                s += (Double) values[col][row];
         return s;
     }
 

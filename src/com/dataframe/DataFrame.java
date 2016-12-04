@@ -4,6 +4,11 @@ import javax.swing.table.AbstractTableModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import java.util.Arrays;
 
 public class DataFrame extends AbstractTableModel {
 
@@ -16,9 +21,9 @@ public class DataFrame extends AbstractTableModel {
     /**
      * Class constructor
      *
-     * @param data_
-     * @param columns_
-     * @param index_
+     * @param data_  Data instance
+     * @param columns_ Header instance
+     * @param index_ Index instance
      */
     public DataFrame(Data data_, Header columns_, Index index_) {
 
@@ -32,7 +37,7 @@ public class DataFrame extends AbstractTableModel {
     /**
      * Class constructor
      *
-     * @param data
+     * @param data 2D array (number of rows, number of columns)
      * @param columns
      * @param index
      */
@@ -44,7 +49,7 @@ public class DataFrame extends AbstractTableModel {
     /**
      * Return a copy of the DataFrame
      *
-     * @return
+     * @return Returns a copy of this DataFrame
      */
     public DataFrame copy() {
         return new DataFrame(data.values, header.values, index.values);
@@ -61,24 +66,13 @@ public class DataFrame extends AbstractTableModel {
         return Math.sin(Math.PI * x) / (Math.PI * x);
     }
 
+
     /**
-     * Resample of the data in the dataframe
+     * Resample of the data in the DataFrame
      * As seen at:
      * http://dsp.stackexchange.com/questions/8488/what-is-an-algorithm-to-re-sample-from-a-variable-rate-to-a-fixed-rate
      */
     public void Resample(double value, String units) {
-
-        /*
-        def sinc_resample(self, xnew):
-            m,n = (len(self.x), len(xnew))
-            T = 1./n
-            A = np.zeros((m,n))
-
-            for i in range(0,m):
-                A[i,:] = np.sinc((self.x[i] - xnew)/T)
-
-            return Signal(xnew, npl.lstsq(A,self.y)[0])
-        * */
 
         // dictionary with number of seconds per sampling unit
         Map<String, Double> units_dict = new HashMap<>();
@@ -119,10 +113,10 @@ public class DataFrame extends AbstractTableModel {
      * @return
      */
     public Object[] getColumn(int c) {
-        Object[] dta = new Object[data.rows];
-        for (int i = 0; i < data.rows; i++)
-            dta[i] = data.values[i][c];
-        return dta;
+//        Object[] dta = new Object[data.rows];
+//        for (int i = 0; i < data.rows; i++)
+//            dta[i] = data.values[c][c];
+        return data.values[c];
     }
 
 
@@ -135,7 +129,7 @@ public class DataFrame extends AbstractTableModel {
     public Object[] getRow(int r) {
         Object[] dta = new Object[data.columns];
         for (int i = 0; i < data.columns; i++)
-            dta[i] = data.values[r][i];
+            dta[i] = data.values[i][r];
         return dta;
     }
 
@@ -157,7 +151,7 @@ public class DataFrame extends AbstractTableModel {
         for (int row : r) {
             cc = 0;
             for (int col : c) {
-                data[rr][cc] = this.data.values[row][col];
+                data[rr][cc] = this.data.values[col][row];
                 idx[rr] = this.index.values[row];
                 hdr[cc] = this.header.values[col];
                 cc++;
@@ -188,7 +182,7 @@ public class DataFrame extends AbstractTableModel {
         for (int row = 0; row < this.data.rows; row++) {
             cc = 0;
             for (int col : c) {
-                data[rr][cc] = this.data.values[row][col];
+                data[rr][cc] = this.data.values[col][row];
                 idx[rr] = this.index.values[row];
                 hdr[cc] = this.header.values[col];
                 cc++;
@@ -197,6 +191,16 @@ public class DataFrame extends AbstractTableModel {
         }
 
         return new DataFrame(data, hdr, idx);
+    }
+
+    /**
+     * Return the descriptive statistics per column
+     * @return Stats2D instance
+     */
+    public Stats2D statistics(){
+        Stats2D stats = new Stats2D(data.values);
+        stats.run();
+        return stats;
     }
 
 
@@ -212,14 +216,14 @@ public class DataFrame extends AbstractTableModel {
         if (col == 0)
             return index.values[row];
         else
-            return data.values[row][col - 1];
+            return data.values[col - 1][row];
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == 0)
             index.values[rowIndex] = aValue;
         else
-            data.values[rowIndex][columnIndex - 1] = aValue;
+            data.values[columnIndex - 1][rowIndex] = aValue;
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {

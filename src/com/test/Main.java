@@ -2,7 +2,6 @@ package com.test;
 
 import com.dataframe.CSV;
 import com.dataframe.DataFrame;
-import com.dataframe.Stats2D;
 
 
 public class Main {
@@ -14,9 +13,9 @@ public class Main {
     public static void main(String[] args) {
 
         DataFrame data_frame = new CSV("Data.csv", ";").read();
-        data_frame.ShowTable();
+        data_frame.showTable();
 
-        data_frame.statistics_df().ShowTable();
+        data_frame.statistics_df().showTable();
 
     }
 }

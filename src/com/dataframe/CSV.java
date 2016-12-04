@@ -52,18 +52,25 @@ public class CSV {
 
         if (header_row == -1) {
             idx = new Object[file.rows];
+            if (index_column ==-1) {
+                data = new Object[file.columns][file.rows];
+                hdr = new String[file.columns];
+            }else{
+                data = new Object[file.columns-1][file.rows];
+                hdr = new String[file.columns-1];
+                col_offset = 1;
+            }
         }else{
             idx = new Object[file.rows-1];
             row_offset = 1;
-        }
-
-        if (index_column ==-1) {
-            data = new Object[file.columns][file.rows];
-            hdr = new String[file.columns];
-        }else{
-            data = new Object[file.columns-1][file.rows];
-            hdr = new String[file.columns-1];
-            col_offset = 1;
+            if (index_column ==-1) {
+                data = new Object[file.columns][file.rows-1];
+                hdr = new String[file.columns];
+            }else{
+                data = new Object[file.columns-1][file.rows-1];
+                hdr = new String[file.columns-1];
+                col_offset = 1;
+            }
         }
 
         // Dump the CSV file to the arrays

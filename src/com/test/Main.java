@@ -13,16 +13,10 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        ui gui = new ui();
-
         DataFrame data_frame = new CSV("Data.csv", ";").read();
-        gui.setModel(data_frame);
+        data_frame.ShowTable();
 
-//        data_frame.Resample(15,"minute");
+        data_frame.statistics_df().ShowTable();
 
-        Stats2D res = data_frame.statistics();
-        System.out.println(res);
-
-        System.out.println(data_frame.data.sum(0));
     }
 }

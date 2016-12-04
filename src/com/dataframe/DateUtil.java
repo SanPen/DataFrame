@@ -18,30 +18,31 @@ public class DateUtil {
     private static final String ymd_template = "\\d{4}{sep}\\d{2}{sep}\\d{2}.*";
     private static final String dmy_template = "\\d{2}{sep}\\d{2}{sep}\\d{4}.*";
 
-    public static Date stringToDate(String input){
+    public static Object stringToDate(String input){
         Date date = null;
         String dateFormat = getDateFormat(input);
         if(dateFormat == null){
-            throw new IllegalArgumentException("Date is not in an accepted format " + input);
-        }
-
-        for(String sep : dateSeparators){
-            String actualDateFormat = patternForSeparator(dateFormat, sep);
-            //try first with the time
-            for(String time : timeFormats){
-                date = tryParse(input,actualDateFormat + " " + time);
+            //throw new IllegalArgumentException("Date is not in an accepted format " + input);
+            return input;  // return the same
+        }else{
+            for(String sep : dateSeparators){
+                String actualDateFormat = patternForSeparator(dateFormat, sep);
+                //try first with the time
+                for(String time : timeFormats){
+                    date = tryParse(input,actualDateFormat + " " + time);
+                    if(date != null){
+                        return date;
+                    }
+                }
+                //didn't work, try without the time formats
+                date = tryParse(input,actualDateFormat);
                 if(date != null){
                     return date;
                 }
             }
-            //didn't work, try without the time formats
-            date = tryParse(input,actualDateFormat);
-            if(date != null){
-                return date;
-            }
-        }
 
-        return date;
+            return date;
+        }
     }
 
     private static String getDateFormat(String date){

@@ -1,9 +1,11 @@
 package com.dataframe;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
+import java.awt.BorderLayout;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
@@ -201,6 +203,44 @@ public class DataFrame extends AbstractTableModel {
         Stats2D stats = new Stats2D(data.values);
         stats.run();
         return stats;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public DataFrame statistics_df(){
+        Stats2D stats = new Stats2D(data.values);
+        stats.run();
+
+        Object[] idx = {"Mean", "Std", "Max", "Min", "Sum"};
+
+        Object[][] data = new Object[5][5];
+
+        for (int col = 0; col < stats.columns; col++) {
+            data[col][0] = stats.mean[col];
+            data[col][1] = stats.std[col];
+            data[col][2] = stats.max[col];
+            data[col][3] = stats.min[col];
+            data[col][4] = stats.sum[col];
+        }
+
+        return new DataFrame(data, header.values, idx);
+    }
+
+
+    public void ShowTable(){
+
+        JTable table = new JTable();
+        table.setModel(this);
+
+        JFrame frame = new JFrame("App");
+//        frame.setContentPane
+        frame.add(new JScrollPane(table), BorderLayout.CENTER);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setSize(800, 500);
     }
 
 

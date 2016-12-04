@@ -37,9 +37,11 @@ public class Data {
 
                 if (values[col][row] != null) {
                     try {
-                        s = (String) values[col][row];
-                        s = s.replace(",", ".");
-                        values[col][row] = Double.parseDouble(s);
+                        if (values[col][row] instanceof String) {
+                            s = (String) values[col][row];
+                            s = s.replace(",", ".");
+                            values[col][row] = Double.parseDouble(s);
+                        }
                     } catch (NumberFormatException e) {
                         e.printStackTrace(); //prints error
                     }

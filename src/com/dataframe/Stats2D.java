@@ -69,7 +69,6 @@ public class Stats2D {
 
     public String toString() {
         String s = "";
-
         s += "Mean \t\t\t Std \t\t\t Max \t\t\t Min \t\t\t Sum \n";
         for (int col = 0; col < columns; col++) {
             s += mean[col] + "\t " + std[col] + " \t " + max[col] + " \t " + min[col] + " \t " + sum[col] + " \n";
